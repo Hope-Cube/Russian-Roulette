@@ -20,7 +20,7 @@ namespace ConsoleMenu
         private ConstOpts _constopt;
         private int _index;
         private int _titleNopts;
-        private int _titleNoptspp;
+        private int _titleNoptspp = 0;
         private string _prompt;
         private int _depthindex;
         private int _triggerindex;
@@ -101,6 +101,55 @@ namespace ConsoleMenu
             _color = color; // Set color (defaulting to ConsoleColor.White)
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Menu"/> class specifically designed for game field menus.
+        /// </summary>
+        /// <param name="gamefieldrows">A list of strings representing the rows of the game field.</param>
+        /// <param name="depthIndex">The depth index of the menu.</param>
+        /// <param name="triggerIndex">The trigger index of the menu.</param>
+        /// <param name="prompt">The prompt displayed before each menu option.</param>
+        /// <param name="title">The title of the menu.</param>
+        /// <param name="actions">The list of interactable actions associated with the menu.</param>
+        /// <param name="options">The array of menu options.</param>
+        /// <param name="constOpts">The constant options to be added based on the ConstOpts enum.</param>
+        /// <param name="color">The color of the menu (defaulting to ConsoleColor.White).</param>
+        public Menu(List<string> gamefieldrows, int depthIndex, int triggerIndex, char prompt, string title, List<InteractableOption> actions, string[] options, ConstOpts constOpts, ConsoleColor color = ConsoleColor.White)
+        {
+            // Set the total number of rows in the game field
+            _titleNoptspp = gamefieldrows.Count;
+
+            // Set the depth index of the menu
+            _depthindex = depthIndex;
+
+            // Set the trigger index of the menu
+            _triggerindex = triggerIndex;
+
+            // Set the prompt character for each option in the menu
+            _prompt = prompt.ToString() + ' ';
+
+            // Set the title of the menu
+            _title = title;
+
+            // Initialize the list of actions associated with menu options
+            _actions = actions;
+
+            // Apply constant options to the provided options based on the ConstOpts enum
+            _options = ConstOptions(options, constOpts);
+
+            // Set the initial selected index to 0
+            _index = 0;
+
+            // Calculate the total number of lines occupied by the title and options
+            _titleNopts = title.Count(c => c == '\n') + 2;
+
+            // Set the constant options for the menu
+            _constopt = constOpts;
+
+            // Set the color of the menu (defaulting to ConsoleColor.White)
+            _color = color;
+        }
+
+
         // Adds constant options (like Back, Exit) to the provided options
         private string[] ConstOptions(string[] options, ConstOpts constOpts)
         {
@@ -129,7 +178,7 @@ namespace ConsoleMenu
         // Displays individual menu options
         private void OptionsOut()
         {
-            SetCursorPosition(0, _titleNopts);
+            SetCursorPosition(0, _titleNoptspp + _titleNopts);
 
             for (int i = 0; i < _options.Length; i++)
             {
